@@ -9,9 +9,6 @@ import { z } from "zod";
 // eslint-disable-next-line import/order
 import { Form, FormControl } from "@/components/ui/form";
 
-// import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-// import { SelectItem } from "@/components/ui/select";
-
 import "react-datepicker/dist/react-datepicker.css";
 import "react-phone-number-input/style.css";
 import { Label } from "@/components/ui/label";
@@ -229,21 +226,18 @@ const RegisterForm = ({ user }: { user: User }) => {
             placeholder="Select a physician"
           >
             {Doctors.map((doctor, index) => (
-              // <SelectItem key={doctor.name + i} value={doctor.name}>
-              <div
-                key={index}
-                className="flex cursor-pointer items-center gap-2"
-              >
-                <Image
-                  src={doctor.image}
-                  width={32}
-                  height={32}
-                  alt="doctor"
-                  className="rounded-full border border-dark-500"
-                />
-                <p>{doctor.name}</p>
-              </div>
-              // </SelectItem>
+              <SelectItem key={doctor.name + index} value={doctor.name}>
+                <div className="flex cursor-pointer items-center gap-2">
+                  <Image
+                    src={doctor.image}
+                    width={32}
+                    height={32}
+                    alt="doctor"
+                    className="rounded-full border border-dark-500"
+                  />
+                  <p>{doctor.name}</p>
+                </div>
+              </SelectItem>
             ))}
           </CustomFormField>
 
