@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -20,6 +21,7 @@ import {
   IdentificationTypes,
   PatientFormDefaultValues,
 } from "@/constants";
+import { registerPatient } from "@/lib/actions/patient.actions";
 import { PatientFormValidation } from "@/lib/validation";
 
 import CustomFormField from "../CustomFormField";
@@ -29,26 +31,27 @@ import SubmitButton from "../SubmitButton";
 import { FormFieldType } from "./PatientForm";
 
 const RegisterForm = ({ user }: { user: User }) => {
+  const router = useRouter();
+
   const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<z.infer<typeof PatientFormValidation>>({
     resolver: zodResolver(PatientFormValidation),
     defaultValues: {
       ...PatientFormDefaultValues,
-      name: user?.name,
-      email: user?.email,
-      phone: user?.phone,
+      name: "",
+      email: "",
+      phone: "",
     },
   });
 
   const onSubmit = async (values: z.infer<typeof PatientFormValidation>) => {
     setIsLoading(true);
-
-    // Store file info in form data as
     let formData;
+
     if (
       values.identificationDocument &&
-      values.identificationDocument?.length > 0
+      values.identificationDocument.length > 0
     ) {
       const blobFile = new Blob([values.identificationDocument[0]], {
         type: values.identificationDocument[0].type,
@@ -58,7 +61,6 @@ const RegisterForm = ({ user }: { user: User }) => {
       formData.append("blobFile", blobFile);
       formData.append("fileName", values.identificationDocument[0].name);
     }
-
     try {
       const patient = {
         userId: user.$id,
@@ -85,12 +87,12 @@ const RegisterForm = ({ user }: { user: User }) => {
           : undefined,
         privacyConsent: values.privacyConsent,
       };
-      console.log(patient);
-      // const newPatient = await registerPatient(patient);
 
-      // if (newPatient) {
-      //   router.push(`/patients/${user.$id}/new-appointment`);
-      // }
+      const newPatient = await registerPatient(patient);
+
+      if (newPatient) {
+        router.push(`/patients/${user.$id}/new-appointment`);
+      }
     } catch (error) {
       console.log(error);
     }
